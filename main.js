@@ -58,13 +58,6 @@ const generateRandomPrice = () => {
     //toFixed(2) rounds to two decimal places, but turns it to a string
     //so we convert to a number with Number()
     return Number((Math.random() * 40 + 2).toFixed(2))
-
-    // let randomNum = Math.random() * 40 + 2
-
-    // console.log("No rounding: " + randomNum)
-
-    // console.log("With rounding: " + Number(randomNum.toFixed(2)))
-    // return Number(randomNum.toFixed(2))
 }
 
 //generates our fish with random attributes
@@ -125,13 +118,16 @@ let time = 360
 let totalWeightCaught = 0
 let totalPriceCaught = 0
 let caughtFishArr = []
+let chummedWater = false
+let chumLength = 0
+let timeInterval = 0
 
 //create an array for possible time intervals between catching fish in minutes
 let timeIntervalArray = [15, 30, 45, 60, 75, 90]
 
 //get a random time interval
-const getRandomTime = () => {
-    let randomIndex = Math.floor(Math.random() * timeIntervalArray.length)
+const getRandomTime = (max) => {
+    let randomIndex = Math.floor(Math.random() * max)
     return timeIntervalArray[randomIndex]
 }
 
@@ -160,23 +156,35 @@ const displayCaughtFishArr = (array) => {
 
 //catching fish
 const catchingFish = (input, fishCaught) => {
-
-    //get a random time interval
-    let timeInterval = getRandomTime()
-    // console.log(`time interval= ${timeInterval}`)
-
+    //check if the water is still chummed
+    if ((chummedWater === true) && (chumLength < 3)) {
+        //get a random time interval for smaller intervals only
+        timeInterval = getRandomTime(2)
+    } else {
+        //get a random time interval for all possible intervals
+        timeInterval = getRandomTime(6)
+    }
     //add time interval to time, recall time is in minutes
     time += timeInterval
-    // console.log(`time: ${time}`)
 
     //make sure player enters valid input
-    while ((input != "k") && (input != "r") && (input != "f")) {
+    while ((input != "k") && (input != "r") && (input != "f") && (input != "c")) {
         console.log("Please enter [k]eep, [r]elease or [f]ree from previous round:")
         input = prompt("> ").trim()
     }
 
     //if we decide to keep the fish
     if (input === "k") {
+        //if the waters are chummed increment the chumLength variable
+        if((chummedWater === true) && (chumLength < 3)) {
+            chumLength += 1
+        //if the waters are not chummed or have been chummed for 3 or more turns, reset the chumming values
+        } else {
+            chummedWater = false
+            chumLength = 0
+        }
+
+        //add fish weight to our total weight caught
         totalWeightCaught += fishCaught.weight
         //check that the total weight won't go over 10lbs, if it does
         if(totalWeightCaught > 10) {
@@ -207,7 +215,6 @@ const catchingFish = (input, fishCaught) => {
         if (caughtFishArr.length === 0) {
             console.log("You haven't caught any fish. Please catch at least 1 fish before trying to free any")
         } else {
-            // console.log("fish array")
             //display a list of caught fish if there is at least 1 fish in the list
             displayCaughtFishArr(caughtFishArr)
 
@@ -223,9 +230,7 @@ const catchingFish = (input, fishCaught) => {
 
             //remove that fish
             let tempArray = []
-
-            for (let i = 0; i < caughtFishArr.length; i++) {
-                
+            for (let i = 0; i < caughtFishArr.length; i++) {    
                 if (i !== input - 1) {
                     tempArray.push(caughtFishArr[i])
                 } else {
@@ -233,10 +238,13 @@ const catchingFish = (input, fishCaught) => {
                     console.log (`${caughtFishArr[i].name} successfully freed`)
                 }
             } 
-            
             caughtFishArr = tempArray
         }
-        
+    } else if (input === "c") {
+        //set chummedWater to true
+        chummedWater = true
+        //let player know it worked
+        console.log("You chummed the water")
     }
 }
 
@@ -262,7 +270,7 @@ const playGame = () => {
         displayCaughtFish(fishCaught)
 
         //prompt player for desired action
-        console.log("Your action: [k]eep, [r]elease, [f]ree fish from previous round?")
+        console.log("Your action: [k]eep, [r]elease, [f]ree fish from previous round, or [c]hum water?")
         let input = prompt("> ").trim()
 
         //deal with player input
@@ -286,7 +294,7 @@ const playGame = () => {
         displayCaughtFishArr(caughtFishArr)
 
         //display totals of player's catch
-        console.log(`\nTotal weight: ${totalWeightCaught} lbs`)
+        console.log(`Total weight: ${totalWeightCaught} lbs`)
         console.log(`Total price: $${totalPriceCaught}\n`)
     }
 }
