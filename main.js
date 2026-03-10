@@ -1,5 +1,7 @@
 const prompt = require("prompt-sync")({ sigint: true });
 
+const chalk = require("chalk")
+
 /*
 fish - {
     name: string
@@ -109,7 +111,7 @@ const generateRandomFish = () => {
 
 //display fish caught
 const displayCaughtFish = (fish) => {
-    console.log(`You caught a '${fish.name}' weighing ${fish.weight} lbs and valued at $${fish.value}`)
+    console.log(`You caught a '${chalk.blue`${fish.name}`}' weighing ${chalk.blue`${fish.weight} lbs`} and valued at ${chalk.blue`$${fish.value}`}\n`)
 }
 
 //variables for tracking totals
@@ -176,7 +178,7 @@ const catchingFish = (input, fishCaught) => {
 
     //make sure player enters valid input
     while ((input != "k") && (input != "r") && (input != "f") && (input != "c")) {
-        console.log("Please enter [k]eep, [r]elease or [f]ree from previous round:")
+        console.log(`Please enter ${chalk.magenta("[k]")}eep, ${chalk.magenta("[r]")}elease or ${chalk.magenta("[f]")}ree from previous round:`)
         input = prompt("> ").trim()
     }
 
@@ -249,19 +251,18 @@ const catchingFish = (input, fishCaught) => {
 
 //UI
 
-const welcome = "\nYou've gone fishing! Try to maximize the value of your caught fish. You can fish for six hours (till 12:00pm) and can catch at most 10 lbs of fish."
-
+const welcome = "You've Gone Fishing!!!\n\nTry to maximize the value of your caught fish. You can fish for six hours (till 12:00pm) and can catch at most 10 lbs of fish."
 
 const playGame = () => {
 
     //player plays for 6 hours, starting at 6 ending at 12
     while (time < 720) {
 
-        console.log("\n==========================================\n")
+        console.log("\n==============================================================================================\n")
         //get a string that displays the current value of time in hh:mm format
         let currentTime = displayTime(time)
         //update the player with their total caught information
-        console.log(`The time is ${currentTime}am. So far you've caught: ${caughtFishArr.length} fish, ${totalWeightCaught.toFixed(2)} lbs, $${totalPriceCaught.toFixed(2)}\n`)
+        console.log(`The time is ${chalk.green`${currentTime}am`}. So far you've caught: ${chalk.green`${caughtFishArr.length}`} fish, ${chalk.green`${totalWeightCaught.toFixed(2)} lbs`}, ${chalk.green`$${totalPriceCaught.toFixed(2)}`}\n`)
 
         //generate a random fish
         const fishCaught = generateRandomFish()
@@ -270,10 +271,10 @@ const playGame = () => {
 
         if (chummedWater === true) {
             //prompt player for desired action
-            console.log("Your action: [k]eep, [r]elease or [f]ree fish from previous round?")
+            console.log(`Your action: ${chalk.magenta("[k]")}eep, ${chalk.magenta("[r]")}elease or ${chalk.magenta("[f]")}ree fish from previous round?`)
         } else {
             //prompt player for desired action
-            console.log("Your action: [k]eep, [r]elease, [f]ree fish from previous round, or [c]hum water?")
+            console.log(`Your action: ${chalk.magenta("[k]")}eep, ${chalk.magenta("[r]")}elease, ${chalk.magenta("[f]")}ree fish from previous round, or ${chalk.magenta("[c]")}hum water?`)
         }
         //prompt player for desired action
         let input = prompt("> ").trim()
@@ -282,15 +283,15 @@ const playGame = () => {
         catchingFish(input, fishCaught)
 
         //update current time to a string that displays the actual current value of time in hh:mm format
-        currentTime = displayTime(time)
-        //update the player with their total caught information
-        console.log(`\nThe time is ${currentTime}am. So far you've caught: ${caughtFishArr.length} fish, ${totalWeightCaught.toFixed(2)} lbs, $${totalPriceCaught.toFixed(2)}\n`)
+        // currentTime = displayTime(time)
+        // //update the player with their total caught information
+        // console.log(`\nThe time is ${currentTime}am. So far you've caught: ${caughtFishArr.length} fish, ${totalWeightCaught.toFixed(2)} lbs, $${totalPriceCaught.toFixed(2)}\n`)
     }
 
     //on the 6th turn, conclude the game
     //note that 720 is 12 hours past midnight or 6 hours past 6am, the start of our game
     if (time >= 720) {
-        console.log("\n==========================================\n")
+        console.log("\n==============================================================================================\n")
         console.log("The time is 12:00pm. Times up!\n")
 
         console.log(`You caught ${caughtFishArr.length} fish:`)
@@ -305,5 +306,6 @@ const playGame = () => {
 }
 
 //run the game
+console.log("\n")
 console.log(welcome)
 playGame()
